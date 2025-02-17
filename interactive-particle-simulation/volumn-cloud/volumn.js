@@ -9,7 +9,7 @@ let mesh;
 init();
 
 function init() {
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ alpha: true }); // Set alpha to true
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setAnimationLoop(animate);
@@ -47,7 +47,7 @@ function init() {
     new THREE.SphereGeometry(10),
     new THREE.MeshBasicMaterial({ map: skyMap, side: THREE.BackSide })
   );
-  scene.add(sky);
+  //scene.add(sky);
 
   // Texture
   const size = 128;
