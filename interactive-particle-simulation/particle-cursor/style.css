@@ -1,26 +1,26 @@
 body {
-  font-family: 'helvetica', sans-serif;
+  font-family: 'Arial', sans-serif;
   background-color: #121212;
   color: #e0e0e0;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  justify-content:flex-start;
+  justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
 a {
   text-decoration: none;
-  color: #ececec;
-  font-weight: normal;
+  color: #bb86fc;
+  font-weight: bold;
   margin: 10px 0;
   display: block;
 }
 
 a:hover {
-  color: #abb7ff;
+  color: #3700b3;
 }
 
 #app {
@@ -28,8 +28,9 @@ a:hover {
 }
 
 header {
-  font-weight: normal;
+  background-color: #1f1f1f;
   padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   width: 100%;
   text-align: center;
 }
