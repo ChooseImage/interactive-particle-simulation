@@ -10,6 +10,7 @@ body {
     position: relative;
     font-family: Arial, sans-serif;
     background-color: rgb(14, 14, 14);
+    height: 300vh; /* Ensure enough scroll space */
 }
 .header {
     color: white;
@@ -22,9 +23,10 @@ body {
     display:flex;
     justify-content: center;
     align-items: center;
+    z-index: 3; /* Ensure header is above the canvas */
 }
 .header h1 {
-    color: black;
+    color: white; /* Change to white for better visibility */
     font-size: 4.5em;
 }
 
@@ -37,12 +39,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f0f0f0;
+    background-color: transparent; /* Make container background transparent */
+    height: 100vh; /* Ensure container takes full viewport height */
 }
 canvas {
     position: sticky;
     top: 0;
     display: block;
-    z-index: 2;
+    z-index: 1; /* Ensure canvas is behind the header */
     height: 100vh;
 }
