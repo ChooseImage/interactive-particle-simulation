@@ -45,13 +45,14 @@ function createWorld() {
   //---
   scene = new THREE.Scene();
   scene.fog = new THREE.Fog(Theme._dark, 150, 320);
-  scene.background = new THREE.Color(Theme._dark);
+  // Remove the background color setting
+  // scene.background = new THREE.Color(Theme._dark);
   scene.add(groupMoon);
   //---
   camera = new THREE.PerspectiveCamera(20, _width / _height, 1, 1000);
   camera.position.set(0, 10, 120);
   //---
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Set alpha to true
   renderer.setSize(_width, _height);
   renderer.shadowMap.enabled = true;
   //---
@@ -193,7 +194,7 @@ function createGUI() {
   var timeGUI = gui.addFolder("Setup");
   timeGUI.add(options.perlin, "time", 0.0, 10.0).name("Speed").listen();
   timeGUI.add(options.perlin, "morph", 0.0, 20.0).name("Morph").listen();
-  timeGUI.add(options.perlin, "dnoise", 0.0, 100.0).name("DNoise").listen();
+  timeGUI.add(options.perlin, "dnoise", 0.0, 1000.0).name("DNoise").listen();
 
   var rgbGUI = gui.addFolder("RGB");
   rgbGUI.add(options.chroma, "RGBr", 0.0, 10.0).name("Red").listen();
@@ -212,7 +213,7 @@ function createGUI() {
 
 skinElement = function (geo_frag = 5) {
   var geo_size = 20;
-  if (geo_frag >= 5) geo_frag = 5;
+  if (geo_frag >= 5) geo_frag = 20;
   //---
   geo = new THREE.IcosahedronGeometry(geo_size, geo_frag);
   //---
