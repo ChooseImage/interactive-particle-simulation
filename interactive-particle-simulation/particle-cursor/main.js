@@ -185,10 +185,16 @@ const positions = new Float32Array(particleCount * 3);
 const colors = new Float32Array(particleCount * 3);
 const velocities = new Float32Array(particleCount * 3);
 
-for (let i = 0; i < particleCount * 3; i++) {
+for (let i = 0; i < particleCount * 3; i += 3) {
   positions[i] = (Math.random() - 0.5) * 10;
+  positions[i + 1] = (Math.random() - 0.5) * 10;
+  positions[i + 2] = (Math.random() - 0.5) * 2; // Closer on the z-axis
   velocities[i] = (Math.random() - 0.5) * 0.1;
+  velocities[i + 1] = (Math.random() - 0.5) * 0.1;
+  velocities[i + 2] = (Math.random() - 0.5) * 0.02; // Smaller velocity on the z-axis
   colors[i] = Math.random(); // Start with random color intensity for more variety
+  colors[i + 1] = Math.random();
+  colors[i + 2] = Math.random();
 }
 
 particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
