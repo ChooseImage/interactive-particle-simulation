@@ -15,6 +15,18 @@ function init() {
   renderer.setAnimationLoop(animate);
   document.body.appendChild(renderer.domElement);
 
+  document.body.style.height = "300vh"; // Make the body height 3 times the viewport height
+  renderer.domElement.style.position = "sticky";
+  renderer.domElement.style.top = "0";
+
+  // Add fake sections for scrolling
+  for (let i = 0; i < 2; i++) {
+    const section = document.createElement("div");
+    section.style.height = "100vh";
+    section.style.background = "#000";
+    document.body.appendChild(section);
+  }
+
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(
@@ -25,7 +37,8 @@ function init() {
   );
   camera.position.set(0, 0, 1.5);
 
-  new OrbitControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false; // Disable zoom interaction
 
   // Sky
   const canvas = document.createElement("canvas");
@@ -250,12 +263,26 @@ function init() {
   gui.add(parameters, "steps", 0, 200, 1).onChange(update);
 
   window.addEventListener("resize", onWindowResize);
+  window.addEventListener("scroll", onScroll); // Add scroll event listener
 }
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onScroll() {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const zoomFactor = 1 + (scrollY / maxScroll) * 1.4; // Adjust zoom factor as needed
+  camera.position.set(0, 0, 1.5 / zoomFactor);
+
+  // Adjust steps based on scroll position
+  const steps = 100 - Math.pow(scrollY / maxScroll, 0.2) * 100;
+  console.log(scrollY, maxScroll);
+  console.log(steps);
+  mesh.material.uniforms.steps.value = steps;
 }
 
 function animate() {
