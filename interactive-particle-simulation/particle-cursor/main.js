@@ -26,7 +26,7 @@ let maxDistance = 10;
 let mouseInfluenceRadius = 1; // Mouse Influence Radius
 const damping = 0.99;
 const dt = 0.016;
-const particleCount = 20000; // Increased total particles in system
+const particleCount = 100000; // Increased total particles in system
 
 // Credits overlay
 const overlay = document.createElement("div");
@@ -188,26 +188,29 @@ const velocities = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount * 3; i += 3) {
   positions[i] = (Math.random() - 0.5) * 10;
   positions[i + 1] = (Math.random() - 0.5) * 10;
-  positions[i + 2] = (Math.random() - 0.5) * 2; // Closer on the z-axis
+  positions[i + 2] = (Math.random() - 0.5) * 0.5; // Closer on the z-axis
   velocities[i] = (Math.random() - 0.5) * 0.1;
   velocities[i + 1] = (Math.random() - 0.5) * 0.1;
-  velocities[i + 2] = (Math.random() - 0.5) * 0.02; // Smaller velocity on the z-axis
-  colors[i] = Math.random(); // Start with random color intensity for more variety
-  colors[i + 1] = Math.random();
-  colors[i + 2] = Math.random();
+  velocities[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
+
+  // Distribute colors with natural noise on a gradient
+  const colorNoise = Math.random();
+  colors[i] = 0.82 * colorNoise + 0.18 * (1 - colorNoise); // Red gradient
+  colors[i + 1] = 0.97 * colorNoise + 0.03 * (1 - colorNoise); // Yellow gradient
+  colors[i + 2] = 0.02 * colorNoise + 0.98 * (1 - colorNoise); // Orange gradient
 }
 
 particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 const particleMaterial = new THREE.PointsMaterial({
-  size: 0.02, // Reduced particle size
+  size: 0.005, // Reduced particle size
   blending: THREE.AdditiveBlending,
   transparent: true,
   sizeAttenuation: true,
   vertexColors: true,
   emissive: new THREE.Color(0xFFF7D9), // Warm light color for glow
-  emissiveIntensity: 1.0, // Intensity of the glow
+  emissiveIntensity: 51.0, // Intensity of the glow
 });
 
 const particleSystem = new THREE.Points(particles, particleMaterial);
