@@ -206,6 +206,35 @@ const particleCountControl = createSlider(
   }
 );
 
+let particleCount2 = 50000; // Initial particle count for second system
+let particleSize2 = 0.005; // Initial particle size for second system
+
+const particleSizeControl2 = createSlider(
+  "Particle Size 2",
+  0.0001,
+  0.05,
+  particleSize2,
+  0.001,
+  (e) => {
+    particleSize2 = parseFloat(e.target.value);
+    particleMaterial2.size = particleSize2;
+    particleSizeControl2.valueDisplay.textContent = particleSize2.toFixed(3);
+  }
+);
+
+const particleCountControl2 = createSlider(
+  "Particle Count 2",
+  1000,
+  200000,
+  particleCount2,
+  1000,
+  (e) => {
+    particleCount2 = parseInt(e.target.value);
+    particleCountControl2.valueDisplay.textContent = particleCount2;
+    updateParticles2();
+  }
+);
+
 // Particle setup
 const particles = new THREE.BufferGeometry();
 const positions = new Float32Array(particleCount * 3);
@@ -220,11 +249,10 @@ for (let i = 0; i < particleCount * 3; i += 3) {
   velocities[i + 1] = (Math.random() - 0.5) * 0.1;
   velocities[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
 
-  // Distribute colors with natural noise on a gradient
-  const colorNoise = Math.random();
-  colors[i] = 0.82 * colorNoise + 0.18 * (1 - colorNoise); // Red gradient
-  colors[i + 1] = 0.97 * colorNoise + 0.03 * (1 - colorNoise); // Yellow gradient
-  colors[i + 2] = 0.02 * colorNoise + 0.98 * (1 - colorNoise); // Orange gradient
+  // Set initial color to blue
+  colors[i] = 0.1; // Blue
+  colors[i + 1] = 0.1; // Blue
+  colors[i + 2] = 0.8; // Blue
 }
 
 particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -242,6 +270,41 @@ const particleMaterial = new THREE.PointsMaterial({
 
 let particleSystem = new THREE.Points(particles, particleMaterial);
 scene.add(particleSystem);
+
+const particles2 = new THREE.BufferGeometry();
+const positions2 = new Float32Array(particleCount2 * 3);
+const colors2 = new Float32Array(particleCount2 * 3);
+const velocities2 = new Float32Array(particleCount2 * 3);
+
+for (let i = 0; i < particleCount2 * 3; i += 3) {
+  positions2[i] = (Math.random() - 0.5) * 10;
+  positions2[i + 1] = (Math.random() - 0.5) * 10;
+  positions2[i + 2] = (Math.random() - 0.5) * 0.5; // Closer on the z-axis
+  velocities2[i] = (Math.random() - 0.5) * 0.1;
+  velocities2[i + 1] = (Math.random() - 0.5) * 0.1;
+  velocities2[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
+
+  // Set initial color to dark orange
+  colors2[i] = 0.8; // Dark orange
+  colors2[i + 1] = 0.4; // Dark orange
+  colors2[i + 2] = 0.0; // Dark orange
+}
+
+particles2.setAttribute("position", new THREE.BufferAttribute(positions2, 3));
+particles2.setAttribute("color", new THREE.BufferAttribute(colors2, 3));
+
+const particleMaterial2 = new THREE.PointsMaterial({
+  size: particleSize2, // Use particleSize2 variable
+  blending: THREE.AdditiveBlending,
+  transparent: true,
+  sizeAttenuation: true,
+  vertexColors: true,
+  emissive: new THREE.Color(0xFFF7D9), // Warm light color for glow
+  emissiveIntensity: 51.0, // Intensity of the glow
+});
+
+let particleSystem2 = new THREE.Points(particles2, particleMaterial2);
+scene.add(particleSystem2);
 
 camera.position.z = 5; // Camera Z-Position
 
@@ -281,11 +344,10 @@ function updateParticles() {
     velocities[i + 1] = (Math.random() - 0.5) * 0.1;
     velocities[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
 
-    // Distribute colors with natural noise on a gradient
-    const colorNoise = Math.random();
-    colors[i] = 0.82 * colorNoise + 0.18 * (1 - colorNoise); // Red gradient
-    colors[i + 1] = 0.97 * colorNoise + 0.03 * (1 - colorNoise); // Yellow gradient
-    colors[i + 2] = 0.02 * colorNoise + 0.98 * (1 - colorNoise); // Orange gradient
+    // Set initial color to blue
+    colors[i] = 0.1; // Blue
+    colors[i + 1] = 0.1; // Blue
+    colors[i + 2] = 0.8; // Blue
   }
 
   particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -295,20 +357,53 @@ function updateParticles() {
   scene.add(particleSystem);
 }
 
+function updateParticles2() {
+  // Remove existing particles
+  scene.remove(particleSystem2);
+
+  // Create new particles
+  const positions2 = new Float32Array(particleCount2 * 3);
+  const colors2 = new Float32Array(particleCount2 * 3);
+  const velocities2 = new Float32Array(particleCount2 * 3);
+
+  for (let i = 0; i < particleCount2 * 3; i += 3) {
+    positions2[i] = (Math.random() - 0.5) * 10;
+    positions2[i + 1] = (Math.random() - 0.5) * 10;
+    positions2[i + 2] = (Math.random() - 0.5) * 0.5; // Closer on the z-axis
+    velocities2[i] = (Math.random() - 0.5) * 0.1;
+    velocities2[i + 1] = (Math.random() - 0.5) * 0.1;
+    velocities2[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
+
+    // Set initial color to dark orange
+    colors2[i] = 0.8; // Dark orange
+    colors2[i + 1] = 0.4; // Dark orange
+    colors2[i + 2] = 0.0; // Dark orange
+  }
+
+  particles2.setAttribute("position", new THREE.BufferAttribute(positions2, 3));
+  particles2.setAttribute("color", new THREE.BufferAttribute(colors2, 3));
+
+  particleSystem2 = new THREE.Points(particles2, particleMaterial2);
+  scene.add(particleSystem2);
+}
+
 // Animation function
 function animate() {
   requestAnimationFrame(animate);
 
   const positions = particles.attributes.position.array;
   const colors = particles.attributes.color.array;
+  const positions2 = particles2.attributes.position.array;
+  const colors2 = particles2.attributes.color.array;
 
   raycaster.setFromCamera(mouse, camera);
   const mouseIntersectPoint = new THREE.Vector3();
   raycaster.ray.at(camera.position.z, mouseIntersectPoint);
 
   let particlesInOrbit = 0;
+  let particlesInOrbit2 = 0;
 
-  // First loop: Apply gravitational and repulsion forces
+  // First loop: Apply gravitational and repulsion forces for first system
   for (let i = 0; i < particleCount; i++) {
     const index = i * 3;
     let x = positions[index];
@@ -345,14 +440,58 @@ function animate() {
       colors[index + 1] = 0.7 * influenceFactor + 0.1 * (1 - influenceFactor); // Green
       colors[index + 2] = 0.7 * influenceFactor + 0.2 * (1 - influenceFactor); // Blue (warm light color)
     } else {
-      // Particles outside influence stay dim and light grey
-      colors[index] = 0.1; // Red
-      colors[index + 1] = 0.1; // Green
-      colors[index + 2] = 0.2; // Blue
+      // Particles outside influence stay blue
+      colors[index] = 0.1; // Blue
+      colors[index + 1] = 0.1; // Blue
+      colors[index + 2] = 0.8; // Blue
     }
   }
 
-  // Second loop: Update positions and apply constraints
+  // First loop: Apply gravitational and repulsion forces for second system
+  for (let i = 0; i < particleCount2; i++) {
+    const index = i * 3;
+    let x = positions2[index];
+    let y = positions2[index + 1];
+    let z = positions2[index + 2];
+
+    const particlePosition = new THREE.Vector3(x, y, z);
+    const distanceVector = particlePosition.sub(mouseIntersectPoint);
+    const distance = distanceVector.length();
+
+    if (distance < mouseInfluenceRadius) {
+      particlesInOrbit2++;
+
+      // Calculate gravitational force
+      const force = G / (distance * distance);
+      const acceleration = force * dt;
+
+      // Update velocities for orbit
+      const perpVector = new THREE.Vector3(
+        -distanceVector.y,
+        distanceVector.x,
+        0
+      ).normalize();
+      velocities2[index] +=
+        perpVector.x * acceleration - distanceVector.x * acceleration * 0.5;
+      velocities2[index + 1] +=
+        perpVector.y * acceleration - distanceVector.y * acceleration * 0.5;
+      velocities2[index + 2] +=
+        perpVector.z * acceleration - distanceVector.z * acceleration * 0.5;
+
+      // Color based on being affected by the cursor
+      const influenceFactor = 1 - distance / mouseInfluenceRadius;
+      colors2[index] = 0.8 * influenceFactor + 0.1 * (1 - influenceFactor); // Red
+      colors2[index + 1] = 0.7 * influenceFactor + 0.1 * (1 - influenceFactor); // Green
+      colors2[index + 2] = 0.7 * influenceFactor + 0.2 * (1 - influenceFactor); // Blue (warm light color)
+    } else {
+      // Particles outside influence stay dark orange
+      colors2[index] = 0.8; // Dark orange
+      colors2[index + 1] = 0.4; // Dark orange
+      colors2[index + 2] = 0.0; // Dark orange
+    }
+  }
+
+  // Second loop: Update positions and apply constraints for first system
   for (let i = 0; i < particleCount; i++) {
     const index = i * 3;
 
@@ -380,16 +519,47 @@ function animate() {
     }
   }
 
+  // Second loop: Update positions and apply constraints for second system
+  for (let i = 0; i < particleCount2; i++) {
+    const index = i * 3;
+
+    // Apply velocity
+    positions2[index] += velocities2[index] * dt;
+    positions2[index + 1] += velocities2[index + 1] * dt;
+    positions2[index + 2] += velocities2[index + 2] * dt;
+
+    // Apply damping
+    velocities2[index] *= damping;
+    velocities2[index + 1] *= damping;
+    velocities2[index + 2] *= damping;
+
+    // Keep particles within bounds
+    const newDistance = Math.sqrt(
+      positions2[index] ** 2 +
+        positions2[index + 1] ** 2 +
+        positions2[index + 2] ** 2
+    );
+    if (newDistance > maxDistance) {
+      const scale = maxDistance / newDistance;
+      positions2[index] *= scale;
+      positions2[index + 1] *= scale;
+      positions2[index + 2] *= scale;
+    }
+  }
+
   // Update audio volume based on particles in orbit
   if (gainNode && audioContext.state === "running") {
-    const volumePercentage = Math.min(particlesInOrbit / particleCount, 1);
+    const volumePercentage = Math.min(
+      (particlesInOrbit + particlesInOrbit2) / (particleCount + particleCount2),
+      1
+    );
     const minVolume = 0.01; // 1% minimum volume
     const maxVolume = 1.0; // 100% maximum volume
     const volume = minVolume + (maxVolume - minVolume) * volumePercentage;
     gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
     console.log(
       "Particles in orbit:",
-      particlesInOrbit,
+      particlesInOrbit + particlesInOrbit2,
       "Volume:",
       volume.toFixed(2)
     );
@@ -397,6 +567,8 @@ function animate() {
 
   particles.attributes.position.needsUpdate = true;
   particles.attributes.color.needsUpdate = true;
+  particles2.attributes.position.needsUpdate = true;
+  particles2.attributes.color.needsUpdate = true;
   composer.render();
 }
 
