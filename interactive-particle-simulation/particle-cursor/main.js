@@ -168,7 +168,7 @@ const escapeVelocityControl = createSlider(
 
 const mouseInfluenceRadiusControl = createSlider(
   "Mouse Influence Radius",
-  1,
+  0.1,
   10,
   mouseInfluenceRadius,
   0.1,
@@ -273,9 +273,10 @@ function animate() {
         perpVector.z * acceleration - distanceVector.z * acceleration * 0.5;
 
       // Color based on being affected by the cursor
-      colors[index] = 0.8; // Red
-      colors[index + 1] = 0.7; // Green
-      colors[index + 2] = 0.7; // Blue (warm light color)
+      const influenceFactor = 1 - distance / mouseInfluenceRadius;
+      colors[index] = 0.8 * influenceFactor + 0.1 * (1 - influenceFactor); // Red
+      colors[index + 1] = 0.7 * influenceFactor + 0.1 * (1 - influenceFactor); // Green
+      colors[index + 2] = 0.7 * influenceFactor + 0.2 * (1 - influenceFactor); // Blue (warm light color)
     } else {
       // Particles outside influence stay dim and light grey
       colors[index] = 0.1; // Red
