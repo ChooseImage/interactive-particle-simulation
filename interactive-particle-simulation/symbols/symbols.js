@@ -25,7 +25,7 @@ function createWorld() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(_width, _height);
   document.body.style.margin = 0; // Remove margin
-  document.body.style.overflow = 'hidden'; // Prevent scrolling
+  //document.body.style.overflow = 'hidden'; // Prevent scrolling
   document.body.appendChild(renderer.domElement);
   //---
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -73,6 +73,14 @@ function animate() {
   const material = scene.children.find(child => child.material && child.material.uniforms);
   if (material) {
     material.material.uniforms.iTime.value += 0.05;
+    
+    // Calculate scroll position
+    const scrollY = window.scrollY;
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+    const scrollFactor = scrollY / maxScroll;
+
+    // Update distance uniform to move shapes towards the center
+    material.material.uniforms.distance.value = 0.8 - scrollFactor * 0.8;
   }
 }
 
@@ -134,7 +142,7 @@ const fragmentShader = `
 
   void main() {
     vec2 fragCoord = gl_FragCoord.xy;
-    vec4 fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     
     vec2 uv = vUv;
     uv = uv * 2.0 - 1.0;

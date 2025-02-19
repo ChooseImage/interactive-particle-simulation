@@ -8,6 +8,7 @@
 body {
     margin: 0;
     position: relative;
+    height:300vh;
     font-family: Arial, sans-serif;
     background-color: rgb(14, 14, 14);
 }
