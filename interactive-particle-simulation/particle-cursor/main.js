@@ -20,10 +20,10 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 // Global variables
-let G = 5.0; // Gravitational constant (adjusted for visual effect)
+let G = 2; // Gravitational constant (adjusted for visual effect)
 let escapeVelocity = 0.25; // Threshold for escaping orbit
 let maxDistance = 10;
-let mouseInfluenceRadius = 5; // Mouse Influence Radius
+let mouseInfluenceRadius = 1; // Mouse Influence Radius
 const damping = 0.99;
 const dt = 0.016;
 const particleCount = 20000; // Increased total particles in system
@@ -200,6 +200,8 @@ const particleMaterial = new THREE.PointsMaterial({
   transparent: true,
   sizeAttenuation: true,
   vertexColors: true,
+  emissive: new THREE.Color(0xFFF7D9), // Warm light color for glow
+  emissiveIntensity: 1.0, // Intensity of the glow
 });
 
 const particleSystem = new THREE.Points(particles, particleMaterial);
@@ -270,21 +272,15 @@ function animate() {
       velocities[index + 2] +=
         perpVector.z * acceleration - distanceVector.z * acceleration * 0.5;
 
-      // Color based on speed
-      const speed = Math.sqrt(
-        velocities[index] ** 2 +
-          velocities[index + 1] ** 2 +
-          velocities[index + 2] ** 2
-      );
-      const colorIntensity = Math.min(speed / escapeVelocity, 1);
-      colors[index] = 1; // Red
-      colors[index + 1] = 0.5 - colorIntensity * 0.5; // Green
-      colors[index + 2] = 0.5 + colorIntensity * 0.5; // Blue
+      // Color based on being affected by the cursor
+      colors[index] = 0.8; // Red
+      colors[index + 1] = 0.7; // Green
+      colors[index + 2] = 0.7; // Blue (warm light color)
     } else {
-      // Particles outside influence gradually return to random subtle colors
-      colors[index] = Math.min(1, colors[index] + 0.01 * Math.random());
-      colors[index + 1] = Math.min(1, colors[index + 1] + 0.01 * Math.random());
-      colors[index + 2] = Math.min(1, colors[index + 2] + 0.01 * Math.random());
+      // Particles outside influence stay dim and light grey
+      colors[index] = 0.1; // Red
+      colors[index + 1] = 0.1; // Green
+      colors[index + 2] = 0.2; // Blue
     }
   }
 
