@@ -5,6 +5,7 @@ import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
 let renderer, scene, camera;
 let mesh;
+let mouse = new THREE.Vector2();
 
 init();
 
@@ -141,6 +142,7 @@ function init() {
 		uniform float opacity;
 		uniform float steps;
 		uniform float frame;
+		uniform vec2 mouse; // Add mouse uniform
 
 		uint wang_hash(uint seed) {
 			seed = (seed ^ 61u) ^ (seed >> 16u);
@@ -182,7 +184,7 @@ function init() {
 		}
 
 		void main() {
-			vec3 rayDir = normalize(vDirection);
+			vec3 rayDir = normalize(vDirection + vec3(mouse, 0.0) * 0.1); // Modify ray direction based on mouse position
 			vec2 bounds = hitBox(vOrigin, rayDir);
 
 			if (bounds.x > bounds.y) discard;
@@ -232,6 +234,7 @@ function init() {
       range: { value: 0.1 },
       steps: { value: 100 },
       frame: { value: 0 },
+      mouse: { value: new THREE.Vector2() }, // Add mouse uniform
     },
     vertexShader,
     fragmentShader,
@@ -264,6 +267,7 @@ function init() {
 
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("scroll", onScroll); // Add scroll event listener
+  window.addEventListener("mousemove", onMouseMove); // Add mouse move event listener
 }
 
 function onWindowResize() {
@@ -285,8 +289,14 @@ function onScroll() {
   mesh.material.uniforms.steps.value = steps;
 }
 
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
+
 function animate() {
   mesh.material.uniforms.cameraPos.value.copy(camera.position);
+  mesh.material.uniforms.mouse.value = mouse; // Update mouse uniform
   mesh.rotation.y = -performance.now() / 7500;
   mesh.material.uniforms.frame.value++;
   renderer.render(scene, camera);
