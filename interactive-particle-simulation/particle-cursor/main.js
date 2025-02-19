@@ -26,7 +26,8 @@ let maxDistance = 10;
 let mouseInfluenceRadius = 1; // Mouse Influence Radius
 const damping = 0.99;
 const dt = 0.016;
-const particleCount = 100000; // Increased total particles in system
+let particleCount = 100000; // Initial particle count
+let particleSize = 0.005; // Initial particle size
 
 // Credits overlay
 const overlay = document.createElement("div");
@@ -179,6 +180,32 @@ const mouseInfluenceRadiusControl = createSlider(
   }
 );
 
+const particleSizeControl = createSlider(
+  "Particle Size",
+  0.0001,
+  0.05,
+  particleSize,
+  0.001,
+  (e) => {
+    particleSize = parseFloat(e.target.value);
+    particleMaterial.size = particleSize;
+    particleSizeControl.valueDisplay.textContent = particleSize.toFixed(3);
+  }
+);
+
+const particleCountControl = createSlider(
+  "Particle Count",
+  1000,
+  200000,
+  particleCount,
+  1000,
+  (e) => {
+    particleCount = parseInt(e.target.value);
+    particleCountControl.valueDisplay.textContent = particleCount;
+    updateParticles();
+  }
+);
+
 // Particle setup
 const particles = new THREE.BufferGeometry();
 const positions = new Float32Array(particleCount * 3);
@@ -204,7 +231,7 @@ particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 const particleMaterial = new THREE.PointsMaterial({
-  size: 0.005, // Reduced particle size
+  size: particleSize, // Use particleSize variable
   blending: THREE.AdditiveBlending,
   transparent: true,
   sizeAttenuation: true,
@@ -213,7 +240,7 @@ const particleMaterial = new THREE.PointsMaterial({
   emissiveIntensity: 51.0, // Intensity of the glow
 });
 
-const particleSystem = new THREE.Points(particles, particleMaterial);
+let particleSystem = new THREE.Points(particles, particleMaterial);
 scene.add(particleSystem);
 
 camera.position.z = 5; // Camera Z-Position
@@ -236,6 +263,37 @@ window.addEventListener("mousemove", onMouseMove, false);
 window.addEventListener("touchmove", onTouchMove, false);
 
 const raycaster = new THREE.Raycaster();
+
+function updateParticles() {
+  // Remove existing particles
+  scene.remove(particleSystem);
+
+  // Create new particles
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+  const velocities = new Float32Array(particleCount * 3);
+
+  for (let i = 0; i < particleCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 10;
+    positions[i + 1] = (Math.random() - 0.5) * 10;
+    positions[i + 2] = (Math.random() - 0.5) * 0.5; // Closer on the z-axis
+    velocities[i] = (Math.random() - 0.5) * 0.1;
+    velocities[i + 1] = (Math.random() - 0.5) * 0.1;
+    velocities[i + 2] = (Math.random() - 0.5) * 0.005; // Smaller velocity on the z-axis
+
+    // Distribute colors with natural noise on a gradient
+    const colorNoise = Math.random();
+    colors[i] = 0.82 * colorNoise + 0.18 * (1 - colorNoise); // Red gradient
+    colors[i + 1] = 0.97 * colorNoise + 0.03 * (1 - colorNoise); // Yellow gradient
+    colors[i + 2] = 0.02 * colorNoise + 0.98 * (1 - colorNoise); // Orange gradient
+  }
+
+  particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+  particleSystem = new THREE.Points(particles, particleMaterial);
+  scene.add(particleSystem);
+}
 
 // Animation function
 function animate() {
