@@ -140,6 +140,34 @@ const fragmentShader = `
     return length(p - center) < 1. * scaleFactor;
   }
 
+  float smoothUnion(float d1, float d2, float k) {
+    float h = max(k - abs(d1 - d2), 0.0);
+    return min(d1, d2) - h * h * 0.25 / k;
+  }
+
+  float shapeDistance(vec2 p) {
+    float d1 = inPath1(p + vec2(distance, 0.0)) ? 0.0 : 1.0;
+    float d2 = inCircle(p, vec2(0.0, 0.0)) ? 0.0 : 1.0;
+    float d3 = inPath2(p + vec2(-1. * distance, 0.0)) ? 0.0 : 1.0;
+    float k = 0.3; // Increased smoothing factor for more blur
+    float d = smoothUnion(d1, d2, k);
+    d = smoothUnion(d, d3, k);
+    return d;
+  }
+
+  vec4 getShapeColor(vec2 p) {
+    if (inPath1(p + vec2(distance, 0.0))) {
+      return vec4(0.184, 0.918, 0.620, 1.0); // #2FEA9E
+    }
+    if (inCircle(p, vec2(0.0, 0.0))) {
+      return vec4(0.51, 0.314, 1.0, 1.0); // #8250FF
+    }
+    if (inPath2(p + vec2(-1. * distance, 0.0))) {
+      return vec4(1.0, 0.553, 0.765, 1.0); // #FF8DC3
+    }
+    return vec4(0.0, 0.0, 0.0, 0.0);
+  }
+
   void main() {
     vec2 fragCoord = gl_FragCoord.xy;
     vec4 fragColor = vec4(0.0, 0.0, 0.0, 0.0);
@@ -152,20 +180,13 @@ const fragmentShader = `
     float scale = 0.3;
     vec2 p = uv / scale;
     
-    // First shape (left)
-    if (inPath1(p + vec2(distance, 0.0))) {
-      fragColor = vec4(0.184, 0.918, 0.620, 1.0); // #2FEA9E
-    }
+    // Calculate distance to the nearest shape
+    float d = shapeDistance(p);
     
-    // Circle (middle)
-    if (inCircle(p, vec2(0.0, 0.0))) {
-      fragColor = vec4(0.51, 0.314, 1.0, 1.0); // #8250FF
-    }
-    
-    // Triangle shape (right)
-    if (inPath2(p + vec2(-1. * distance, 0.0))) {
-      fragColor = vec4(1.0, 0.553, 0.765, 1.0); // #FF8DC3
-    }
+    // Apply fog effect based on distance
+    float fog = exp(-d * 5.0); // Increased fog effect for more blur
+    vec4 shapeColor = getShapeColor(p);
+    fragColor = mix(vec4(0.0, 0.0, 0.0, 1.0), shapeColor, fog);
     
     gl_FragColor = fragColor;
   }
